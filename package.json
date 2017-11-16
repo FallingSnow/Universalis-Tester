@@ -8,6 +8,9 @@
     "engines": {
         "node": ">=7.0.0"
     },
+    "bin": {
+        "universalis-tester": "dist/universalis-tester-cli.js"
+    },
     "scripts": {
         "dev": "webpack --env=development --watch",
         "build": "webpack --define process.env.NODE_ENV=\"production\" --env=production --progress"
@@ -18,7 +21,7 @@
         "url": "https://github.com/FallingSnow/Universalis-Tester.git"
     },
     "dependencies": {
-        "deep-diff": "^0.3.8",
+        "diff": "^3.4.0",
         "es6-promisify": "^5.0.0",
         "figures": "^2.0.0",
         "fs-monkey": "^0.2.2",

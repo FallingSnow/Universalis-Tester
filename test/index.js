@@ -18,8 +18,16 @@ let suites = [new Suite('login window', [
     .after('after test 2', async() => {}),
     new Suite('attempting login with wrong credentials', [
         new Test('should show error message with username', () => {}),
-        new Test('should show error message with email', async() => {
-            assert.isOk(false, 'did not show error message');
+        new Test('should show error message with email', () => {}),
+        new Test('should expect this test to fail', async() => {
+            assert.isOk('', 'I wanted to fail!');
+        }),
+        new Test('should return proper error object', async() => {
+            assert.deepEqual({status: 'error', message: 'system error', nested: {
+                random: 'value'
+            }}, {status: 'error', message: 'invalid credentials', nested: {
+                expected: 'value'
+            }}, 'incorrect error');
         }),
         new Suite('using wrong password', [
             new Test('should show error message', (done) => {
