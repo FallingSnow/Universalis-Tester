@@ -1,0 +1,49 @@
+{
+    "name": "universalis-tester",
+    "version": "0.0.1",
+    "description": "A unit tester for Universalis.",
+    "author": "Ayrton Sparling",
+    "private": true,
+    "license": "UNLICENSED",
+    "engines": {
+        "node": ">=7.0.0"
+    },
+    "scripts": {
+        "dev": "webpack --env=development --watch",
+        "build": "webpack --define process.env.NODE_ENV=\"production\" --env=production --progress"
+    },
+    "main": "dist/universalis-tester.js",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/FallingSnow/Universalis-Tester.git"
+    },
+    "dependencies": {
+        "es6-promisify": "^5.0.0",
+        "figures": "^2.0.0",
+        "fs-monkey": "^0.2.2",
+        "memfs": "^2.5.9",
+        "memwatch-next": "^0.3.0",
+        "optional": "^0.1.4",
+        "pretty-hrtime": "^1.0.3",
+        "source-map-support": "^0.4.18",
+        "time-limit-promise": "^1.0.2",
+        "unionfs": "^2.0.7",
+        "vm2": "^3.5.2",
+        "yargs": "^10.0.3"
+    },
+    "devDependencies": {
+        "babel-core": "^6.26.0",
+        "babel-eslint": "^8.0.2",
+        "babel-loader": "^7.1.2",
+        "babel-plugin-module-resolver": "^2.7.1",
+        "babel-plugin-transform-runtime": "^6.23.0",
+        "babel-preset-es2016": "^6.24.1",
+        "babel-preset-stage-2": "^6.24.1",
+        "babel-register": "^6.26.0",
+        "babel-runtime": "^6.26.0",
+        "eslint": "^4.7.0",
+        "fs-extra": "^4.0.2",
+        "webpack": "^3.6.0",
+        "webpack-node-externals": "^1.6.0"
+    }
+}
