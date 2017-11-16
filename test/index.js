@@ -4,6 +4,7 @@ import {
     Runners,
     Reporters
 } from '../';
+import {assert} from 'chai';
 
 let suites = [new Suite('login window', [
     new Test('should display login form', async function() {
@@ -17,7 +18,9 @@ let suites = [new Suite('login window', [
     .after('after test 2', async() => {}),
     new Suite('attempting login with wrong credentials', [
         new Test('should show error message with username', () => {}),
-        new Test('should show error message with email', () => {}),
+        new Test('should show error message with email', async() => {
+            assert.isOk(false, 'did not show error message');
+        }),
         new Suite('using wrong password', [
             new Test('should show error message', (done) => {
                 setTimeout(() => {done(new Error('did not show error message'))}, 50);

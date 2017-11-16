@@ -44,12 +44,12 @@ module.exports = function(env) {
             extensions: ['.js', '.json']
         },
 
-        // plugins: [
-        //     new webpack.BannerPlugin({
-        //         banner: '#!/bin/env node\nrequire("source-map-support").install();\n',
-        //         raw: true
-        //     })
-        // ],
+        plugins: [
+            new webpack.BannerPlugin({
+                banner: '#!/bin/env node\nrequire("source-map-support").install();\n',
+                raw: true
+            })
+        ],
 
 
         module: {

@@ -18,6 +18,7 @@
         "url": "https://github.com/FallingSnow/Universalis-Tester.git"
     },
     "dependencies": {
+        "deep-diff": "^0.3.8",
         "es6-promisify": "^5.0.0",
         "figures": "^2.0.0",
         "fs-monkey": "^0.2.2",
@@ -41,6 +42,7 @@
         "babel-preset-stage-2": "^6.24.1",
         "babel-register": "^6.26.0",
         "babel-runtime": "^6.26.0",
+        "chai": "^4.1.2",
         "eslint": "^4.7.0",
         "fs-extra": "^4.0.2",
         "webpack": "^3.6.0",
