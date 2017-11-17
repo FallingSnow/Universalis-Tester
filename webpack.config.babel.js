@@ -24,7 +24,7 @@ module.exports = function(env) {
         context: path.resolve(__dirname),
         entry: {
             [packageJson.name]: './index.js',
-            [packageJson.name+'-cli']: './lib/cli.js'
+            [packageJson.name + '-cli']: './lib/cli.js'
         },
 
         node: {
@@ -46,9 +46,14 @@ module.exports = function(env) {
 
         plugins: [
             new webpack.BannerPlugin({
-                banner: '#!/bin/env node\nrequire("source-map-support").install();\n',
+                banner: 'require("source-map-support").install();\n',
                 raw: true
-            })
+            }),
+            new webpack.BannerPlugin({
+                banner: '#!/bin/env node\n',
+                raw: true,
+                include: /cli/
+            }),
         ],
 
 

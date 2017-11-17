@@ -3,7 +3,7 @@ import {
     Test,
     Runners,
     Reporters
-} from '../';
+} from '../index.js';
 import {assert} from 'chai';
 
 let suites = [new Suite('login window', [
@@ -11,8 +11,9 @@ let suites = [new Suite('login window', [
         await (async() => {})();
         return;
     })
-    .before('before test - async 1 second timeout', (done) => {
-        setTimeout(done, 1000);
+    .before('async before test with 1 second timeout', function(done) {
+        this.skip();
+        setTimeout(done, 100);
     })
     .after('after test', async() => {})
     .after('after test 2', async() => {}),
