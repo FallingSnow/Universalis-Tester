@@ -1,4 +1,3 @@
-#!/bin/env node
 require("source-map-support").install();
 
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -112,16 +111,15 @@ function isPromise(obj) {
     return !!obj && (typeof obj === 'object' || typeof obj === 'function') && typeof obj.then === 'function';
 }
 
-function createAsync(func) {
+function createAsync(func, bind) {
     if (func.length) {
-        return __WEBPACK_IMPORTED_MODULE_0_es6_promisify___default()(func, this);
+        return __WEBPACK_IMPORTED_MODULE_0_es6_promisify___default()(func, bind);
     } else if (isPromise(func)) {
-        return func.bind(this);
+        return func.bind(bind);
     } else {
-        let _self = this;
         return () => new Promise((resolve, reject) => {
             try {
-                resolve(func.call(_self));
+                resolve(func.call(bind));
             } catch (e) {
                 reject(e);
             }
@@ -191,6 +189,7 @@ class Suite extends __WEBPACK_IMPORTED_MODULE_0_events___default.a {
         this._depth = 0;
         this.befores = [];
         this.afters = [];
+        this.info = [];
         this.beforeEaches = [];
         this.afterEaches = [];
         this.status = 'pending';
@@ -219,7 +218,8 @@ class Suite extends __WEBPACK_IMPORTED_MODULE_0_events___default.a {
     beforeEach(description, func) {
         this.beforeEaches.push({
             name: description,
-            func: Object(__WEBPACK_IMPORTED_MODULE_2__utils__["a" /* createAsync */])(func),
+            info: [],
+            func: Object(__WEBPACK_IMPORTED_MODULE_2__utils__["a" /* createAsync */])(func, this),
             status: 'pending',
             type: 'before'
         });
@@ -228,7 +228,8 @@ class Suite extends __WEBPACK_IMPORTED_MODULE_0_events___default.a {
     before(description, func) {
         this.befores.push({
             name: description,
-            func: Object(__WEBPACK_IMPORTED_MODULE_2__utils__["a" /* createAsync */])(func),
+            info: [],
+            func: Object(__WEBPACK_IMPORTED_MODULE_2__utils__["a" /* createAsync */])(func, this),
             status: 'pending',
             type: 'before'
         });
@@ -237,7 +238,8 @@ class Suite extends __WEBPACK_IMPORTED_MODULE_0_events___default.a {
     after(description, func) {
         this.afters.push({
             name: description,
-            func: Object(__WEBPACK_IMPORTED_MODULE_2__utils__["a" /* createAsync */])(func),
+            info: [],
+            func: Object(__WEBPACK_IMPORTED_MODULE_2__utils__["a" /* createAsync */])(func, this),
             status: 'pending',
             type: 'after'
         });
@@ -246,11 +248,35 @@ class Suite extends __WEBPACK_IMPORTED_MODULE_0_events___default.a {
     afterEach(description, func) {
         this.afterEaches.push({
             name: description,
-            func: Object(__WEBPACK_IMPORTED_MODULE_2__utils__["a" /* createAsync */])(func),
+            info: [],
+            func: Object(__WEBPACK_IMPORTED_MODULE_2__utils__["a" /* createAsync */])(func, this),
             status: 'pending',
             type: 'after'
         });
         return this;
+    }
+    skip(condition) {
+        if (!condition && typeof condition !== 'undefined') {
+            return this;
+        }
+
+        if (this._running) throw new Error('You cannot skip a test while it is running.');
+        if (this._ran) throw new Error('You cannot skip a test that has already run.');
+
+        this.befores = [];
+        this.afters = [];
+        this.beforeEaches = [];
+        this.afterEaches = [];
+        this.status = 'skipped';
+    }
+    _started() {
+        this._running = true;
+        this.emit('started', this);
+    }
+    _stopped() {
+        this._running = false;
+        this._ran = true;
+        this.emit('finished', this);
     }
     runFunctions(groups) {
         var _this = this;
@@ -284,14 +310,16 @@ class Suite extends __WEBPACK_IMPORTED_MODULE_0_events___default.a {
         var _this2 = this;
 
         return _asyncToGenerator(function* () {
-            _this2.emit('started', _this2);
+            if (_this2.status !== 'pending') return;
+
+            _this2._started();
             try {
                 yield _this2._run();
                 _this2.status = 'pass';
-                _this2.emit('finished', _this2);
+                _this2._stopped();
             } catch (e) {
                 _this2.status = 'fail';
-                _this2.emit('finished', _this2);
+                _this2._stopped();
                 throw e;
             }
             return _this2;
@@ -301,8 +329,6 @@ class Suite extends __WEBPACK_IMPORTED_MODULE_0_events___default.a {
         var _this3 = this;
 
         return _asyncToGenerator(function* () {
-            if (_this3.status !== 'pending') return;
-
             yield _this3.runFunctions(_this3.befores);
             _this3.time = process.hrtime();
 
@@ -355,6 +381,7 @@ class Test extends __WEBPACK_IMPORTED_MODULE_2_events___default.a {
         super();
         this.befores = [];
         this.afters = [];
+        this.info = [];
         this.status = 'pending';
         this.config = {
             stats: false,
@@ -368,7 +395,8 @@ class Test extends __WEBPACK_IMPORTED_MODULE_2_events___default.a {
     before(description, func) {
         this.befores.push({
             name: description,
-            func: Object(__WEBPACK_IMPORTED_MODULE_3__utils__["a" /* createAsync */])(func),
+            info: [],
+            func: Object(__WEBPACK_IMPORTED_MODULE_3__utils__["a" /* createAsync */])(func, this),
             status: 'pending',
             type: 'before'
         });
@@ -377,18 +405,24 @@ class Test extends __WEBPACK_IMPORTED_MODULE_2_events___default.a {
     after(description, func) {
         this.afters.push({
             name: description,
-            func: Object(__WEBPACK_IMPORTED_MODULE_3__utils__["a" /* createAsync */])(func),
+            info: [],
+            func: Object(__WEBPACK_IMPORTED_MODULE_3__utils__["a" /* createAsync */])(func, this),
             status: 'pending',
             type: 'after'
         });
         return this;
     }
     skip(condition) {
-        if (condition || typeof condition === 'undefined') {
-            this.status = 'skipped';
+        if (!condition && typeof condition !== 'undefined') {
+            return this;
         }
-        this.emit('started', this);
-        this.emit('finished', this);
+
+        if (this._running) throw new Error('You cannot skip a test while it is running.');
+        if (this._ran) throw new Error('You cannot skip a test that has already run.');
+
+        this.befores = [];
+        this.afters = [];
+        this.status = 'skipped';
     }
     runFunctions(groups) {
         var _this = this;
@@ -418,16 +452,23 @@ class Test extends __WEBPACK_IMPORTED_MODULE_2_events___default.a {
             }
         })();
     }
+    _started() {
+        this._running = true;
+        this.emit('started', this);
+    }
+    _stopped() {
+        this._running = false;
+        this._ran = true;
+        this.emit('finished', this);
+    }
     run() {
         var _this2 = this;
 
         return _asyncToGenerator(function* () {
-            _this2.emit('started', _this2);
+
             if (_this2.config.timeout) yield __WEBPACK_IMPORTED_MODULE_1_time_limit_promise___default()(_this2._run(), _this2.config.timeout, {
                 rejectWith: new Error('timeout')
             });else yield _this2._run();
-
-            _this2.emit('finished', _this2);
 
             if (_this2.error) throw _this2.error;
 
@@ -438,9 +479,8 @@ class Test extends __WEBPACK_IMPORTED_MODULE_2_events___default.a {
         var _this3 = this;
 
         return _asyncToGenerator(function* () {
-            if (_this3.status !== 'pending') return;
-
             yield _this3.runFunctions(_this3.befores);
+            _this3._started();
 
             if (_this3.config.stats) {
                 _this3.memory = new __WEBPACK_IMPORTED_MODULE_0_memwatch_next___default.a.HeapDiff();
@@ -448,7 +488,7 @@ class Test extends __WEBPACK_IMPORTED_MODULE_2_events___default.a {
             }
             _this3.time = process.hrtime();
 
-            try {
+            if (_this3.status === 'pending') try {
                 yield _this3.testFunction();
                 _this3.status = 'pass';
             } catch (e) {
@@ -462,6 +502,7 @@ class Test extends __WEBPACK_IMPORTED_MODULE_2_events___default.a {
                 _this3.cpu = process.cpuUsage(_this3.cpu);
                 _this3.memory = _this3.memory.end();
             }
+            _this3._stopped();
             yield _this3.runFunctions(_this3.afters);
         })();
     }
@@ -583,6 +624,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* unused harmony export timeWarning */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_figures__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_figures___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_figures__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_chalk__ = __webpack_require__(0);
@@ -600,14 +642,26 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 
 
+const timeColors = {
+    100: __WEBPACK_IMPORTED_MODULE_1_chalk___default.a.red,
+    20: __WEBPACK_IMPORTED_MODULE_1_chalk___default.a.yellow
+};
+const times = [100, 20];
+function timeWarning(e) {
+
+    const millisecondsDuration = e.time[0] * 1e3 + e.time[1] / 1e6;
+
+    for (let time of times) {
+        if (millisecondsDuration > time) {
+            e.info.push(timeColors[time](`(${__WEBPACK_IMPORTED_MODULE_2_pretty_hrtime___default()(e.time)})`));
+            break;
+        }
+    }
+}
+
 class Spec {
     constructor(runner) {
-        this.warnings = {
-            time: {
-                20: __WEBPACK_IMPORTED_MODULE_1_chalk___default.a.yellow,
-                100: __WEBPACK_IMPORTED_MODULE_1_chalk___default.a.red
-            }
-        };
+        this.postProcessors = [timeWarning];
 
         this.runner = runner;
     }
@@ -622,24 +676,21 @@ class Spec {
                         break;
                 }
             }).on('finished', function (e) {
-                let icon = e.status === 'pass' ? __WEBPACK_IMPORTED_MODULE_1_chalk___default.a.green(__WEBPACK_IMPORTED_MODULE_0_figures___default.a.tick) : e.status === 'fail' ? __WEBPACK_IMPORTED_MODULE_1_chalk___default.a.red(__WEBPACK_IMPORTED_MODULE_0_figures___default.a.cross) : e.status === 'skipped' ? __WEBPACK_IMPORTED_MODULE_1_chalk___default.a.grey(__WEBPACK_IMPORTED_MODULE_0_figures___default.a.ellipsis) : __WEBPACK_IMPORTED_MODULE_1_chalk___default.a.cyan(__WEBPACK_IMPORTED_MODULE_0_figures___default.a.warning);
-                let number = e.status === 'fail' ? `[${__WEBPACK_IMPORTED_MODULE_1_chalk___default.a.bold(_this.runner.results[e.type][e.status].length)}]` : '';
+                let icon = e.status === 'pass' ? __WEBPACK_IMPORTED_MODULE_1_chalk___default.a.green(__WEBPACK_IMPORTED_MODULE_0_figures___default.a.tick) : e.status === 'fail' ? __WEBPACK_IMPORTED_MODULE_1_chalk___default.a.red(__WEBPACK_IMPORTED_MODULE_0_figures___default.a.cross) : e.status === 'skipped' ? __WEBPACK_IMPORTED_MODULE_1_chalk___default.a.blue(__WEBPACK_IMPORTED_MODULE_0_figures___default.a.line) : __WEBPACK_IMPORTED_MODULE_1_chalk___default.a.yellow(__WEBPACK_IMPORTED_MODULE_0_figures___default.a.warning);
+                let number = e.status === 'fail' ? `[${__WEBPACK_IMPORTED_MODULE_1_chalk___default.a.bold(_this.runner.results[e.type][e.status].length)}] ` : '';
                 let indent = '  '.repeat(e.depth);
 
-                let warning = '';
-                const millisecondsDuration = e.time[0] * 1e3 + e.time[1] / 1e6;
-                for (let [time, color] of Object.entries(_this.warnings.time)) {
-                    if (millisecondsDuration > time) {
-                        warning = color(`(${__WEBPACK_IMPORTED_MODULE_2_pretty_hrtime___default()(e.time)})`);
-                    }
+                for (let postProcessor of _this.postProcessors) {
+                    postProcessor(e);
                 }
+
                 switch (e.type) {
                     case 'before':
                     case 'after':
-                        if (warning) console.log(indent + __WEBPACK_IMPORTED_MODULE_1_chalk___default.a.yellow(e.name), warning);
+                        if (e.info.length) console.log(indent + __WEBPACK_IMPORTED_MODULE_1_chalk___default.a.yellow(e.name), e.info.join(' '));
                         break;
                     case 'test':
-                        console.log(indent + icon, e.name, number, warning);
+                        console.log(indent + icon, e.name, number + e.info.join(' '));
                 }
             }).run();
 

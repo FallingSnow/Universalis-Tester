@@ -1,4 +1,5 @@
 #!/bin/env node
+
 require("source-map-support").install();
 
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -191,13 +192,17 @@ _asyncToGenerator(function* () {
             webpackConfig = typeof webpackConfig === 'function' ? webpackConfig(argv.webpackEnv) : webpackConfig;
 
             console.log('\n' + __WEBPACK_IMPORTED_MODULE_1_chalk___default.a.bgWhite(__WEBPACK_IMPORTED_MODULE_1_chalk___default.a.black(' WEBPACK ')));
-            let compiled = yield Object(__WEBPACK_IMPORTED_MODULE_4__webpack_compiler__["a" /* default */])([argv.file], webpackConfig);
+            let compiled = yield Object(__WEBPACK_IMPORTED_MODULE_4__webpack_compiler__["a" /* default */])(__WEBPACK_IMPORTED_MODULE_3_path___default.a.dirname(configPath), [argv.file], webpackConfig);
             let stats = compiled.stats;
             console.log(stats.toString("minimal"));
 
+            const info = stats.toJson();
+            if (stats.hasErrors()) {
+                return;
+            }
+
             console.log('\n' + __WEBPACK_IMPORTED_MODULE_1_chalk___default.a.bgWhite(__WEBPACK_IMPORTED_MODULE_1_chalk___default.a.black(' TESTER ')));
-            const assets = stats.toJson().assets;
-            for (let asset of assets) {
+            for (let asset of info.assets) {
                 if (asset.name.endsWith('.js')) {
                     yield runScript(__WEBPACK_IMPORTED_MODULE_3_path___default.a.resolve(compiled.outputPath, asset.name));
                 }
@@ -246,11 +251,12 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 
 /* harmony default export */ __webpack_exports__["a"] = ((() => {
-    var _ref = _asyncToGenerator(function* (entries, config = {}) {
+    var _ref = _asyncToGenerator(function* (context, entry, config = {}) {
 
         // A default config if no real config is provided
         Object.assign(config, {
-            entry: entries
+            entry,
+            context
         });
 
         const outputPath = __WEBPACK_IMPORTED_MODULE_2_path___default.a.join(__WEBPACK_IMPORTED_MODULE_3_os___default.a.tmpdir(), 'tester');
@@ -258,7 +264,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
         config.output.path = outputPath;
 
         const nodeModulesPath = __WEBPACK_IMPORTED_MODULE_2_path___default.a.resolve(outputPath, 'node_modules');
-        if (!__WEBPACK_IMPORTED_MODULE_4_fs___default.a.existsSync(nodeModulesPath)) __WEBPACK_IMPORTED_MODULE_4_fs___default.a.symlinkSync(__WEBPACK_IMPORTED_MODULE_2_path___default.a.resolve(__WEBPACK_IMPORTED_MODULE_2_path___default.a.dirname(entries[0]), 'node_modules'), nodeModulesPath);
+        if (!__WEBPACK_IMPORTED_MODULE_4_fs___default.a.existsSync(nodeModulesPath)) __WEBPACK_IMPORTED_MODULE_4_fs___default.a.symlinkSync(__WEBPACK_IMPORTED_MODULE_2_path___default.a.resolve(context, 'node_modules'), nodeModulesPath);
 
         // Initialize the webpack compiler with an in-memory file system
         const compiler = __WEBPACK_IMPORTED_MODULE_0_webpack___default()(config);
@@ -269,7 +275,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
         };
     });
 
-    function compile(_x) {
+    function compile(_x, _x2) {
         return _ref.apply(this, arguments);
     }
 
