@@ -11,8 +11,8 @@ let suites = [new Suite('login window', [
         await (async() => {})();
         return;
     })
-    .before('async before test with 1 second timeout', function(done) {
-        this.skip();
+    .before('async before test with 100ms timeout', function(done) {
+        // this.skip();
         setTimeout(done, 100);
     })
     .after('after test', async() => {})
@@ -37,11 +37,17 @@ let suites = [new Suite('login window', [
         ]),
     ]),
     new Suite('attempting login with correct credentials', [
-        new Test('should display user page', () => {})
+        new Test('should display user page', () => {}),
+        new Test('should authenticate websocket connection', () => {})
     ])
     .beforeEach('before each!', async() => {})
 ])];
 
 let spec = new Reporters.Spec(new Runners.Default(suites));
+
+spec.postProcessors.push((e) => {
+    if (e.type === 'before' || e.type === 'after')
+    e.info.push('Message on all before/afters');
+});
 
 spec.start();

@@ -377,7 +377,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 
 class Test extends __WEBPACK_IMPORTED_MODULE_2_events___default.a {
-    constructor(name, testFunction) {
+    constructor(name, testFunction, config) {
         super();
         this.befores = [];
         this.afters = [];
@@ -389,6 +389,7 @@ class Test extends __WEBPACK_IMPORTED_MODULE_2_events___default.a {
         };
         this.depth = 0;
         this.type = 'test';
+        Object.assign(this.config, config);
         this.name = name;
         this.testFunction = Object(__WEBPACK_IMPORTED_MODULE_3__utils__["a" /* createAsync */])(testFunction);
     }
