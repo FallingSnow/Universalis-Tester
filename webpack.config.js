@@ -27,10 +27,6 @@ module.exports = function(env) {
             [packageJson.name + '-cli']: './lib/cli.js'
         },
 
-        node: {
-            __dirname: true
-        },
-
         output: {
             path: env === 'production' ? path.resolve(__dirname, 'dist') : path.join(tempDir),
             publicPath: '',
