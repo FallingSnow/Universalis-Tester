@@ -26,6 +26,7 @@
         "es6-promisify": "^5.0.0",
         "figures": "^2.0.0",
         "fs-monkey": "^0.2.2",
+        "lodash.merge": "^4.6.0",
         "memfs": "^2.5.9",
         "memwatch-next": "^0.3.0",
         "optional": "^0.1.4",
