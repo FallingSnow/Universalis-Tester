@@ -18,8 +18,12 @@ let suites = [new Suite('login window', [
     .after('after test', async() => {})
     .after('after test 2', async() => {}),
     new Suite('attempting login with wrong credentials', [
-        new Test('should show error message with username', () => {}),
-        new Test('should show error message with email', () => {}),
+        new Test('should show error message with username', function() {
+            return {user: 'The User!'};
+        }),
+        new Test('should show error message with email', function() {
+            console.log('Was not able to login for user:', this.context.user)
+        }),
         new Test('should expect this test to fail', async() => {
             assert.isOk('', 'I wanted to fail!');
         }),
