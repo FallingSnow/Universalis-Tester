@@ -19,5 +19,8 @@
         "no-console": "off",
         "no-duplicate-case": "off",
         "no-unused-vars": "warn"
+    },
+    "globals": {
+        "__non_webpack_require__": true
     }
 }

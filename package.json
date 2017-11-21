@@ -13,8 +13,8 @@
     },
     "scripts": {
         "dev": "webpack --env=development --watch",
-        "build": "webpack --define process.env.NODE_ENV=\"production\" --env=production --progress",
-        "test": "webpack  --define process.env.NODE_ENV=\"production\" --env=production --display minimal && node ./dist/universalis-tester-cli.js ./test"
+        "build": "webpack --define process.env.NODE_ENV=\"production\" --env=production --progress && chmod +x ./dist/universalis-tester-cli.js",
+        "test": "webpack --define process.env.NODE_ENV=\"production\" --env=production --display minimal && node ./dist/universalis-tester-cli.js ./test"
     },
     "main": "dist/universalis-tester.js",
     "repository": {
@@ -28,7 +28,6 @@
         "lodash.merge": "^4.6.0",
         "memfs": "^2.5.9",
         "memwatch-next": "^0.3.0",
-        "optional": "^0.1.4",
         "pretty-hrtime": "^1.0.3",
         "recursive-readdir": "^2.2.1",
         "source-map-support": "^0.4.18",
